@@ -4,9 +4,9 @@ import "errors"
 
 // 模擬數據庫
 var test_users = []User{
-	{ID: "1", Username: "Golang", Email: "Google", Password: ""},
-	{ID: "2", Username: "Java", Email: "Oracle", Password: ""},
-	{ID: "3", Username: "Python", Email: "Python Software Foundation", Password: ""},
+	{ID: "1", Username: "Golang", Email: "Google", Password: "abc"},
+	{ID: "2", Username: "Java", Email: "Oracle", Password: "abcd"},
+	{ID: "3", Username: "Python", Email: "Python Software Foundation", Password: "abcdefg"},
 }
 
 // GetBooks 獲取所有書籍

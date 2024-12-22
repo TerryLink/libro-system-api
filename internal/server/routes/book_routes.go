@@ -22,7 +22,7 @@ func RegisterBookRoutes(router *gin.Engine) {
 // 處理 GET /books 請求
 func getBooks(c *gin.Context) {
 	allBooks := books.FetchAllBooks()
-	c.IndentedJSON(http.StatusOK, allBooks)
+	c.JSON(http.StatusOK, gin.H{"status": "ok", "books": allBooks})
 }
 
 // 處理 GET /books/:id 請求
