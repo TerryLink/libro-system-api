@@ -16,6 +16,12 @@ import (
 type Service interface {
 	Health() map[string]string
 	Close() error
+	GetDB() *gorm.DB // 新增方法，返回 *gorm.DB
+}
+
+// GetDB returns the underlying GORM DB instance.
+func (s *service) GetDB() *gorm.DB {
+	return s.db
 }
 
 type service struct {
