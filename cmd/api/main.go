@@ -12,7 +12,7 @@ import (
 	"go-api-server/internal/server"
 )
 
-func gracefulShutdown(apiServer *http.Server, done chan bool) {
+func gracefulShutdown(apiServer *server.Server, done chan bool) {
 	// Create context that listens for the interrupt signal from the OS.
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
@@ -37,21 +37,21 @@ func gracefulShutdown(apiServer *http.Server, done chan bool) {
 }
 
 func main() {
+	// 初始化伺服器
+	apiServer := server.NewServer(8080)
 
-	server := server.NewServer(8080)
-
-	// Create a done channel to signal when the shutdown is complete
+	// 創建一個 channel，用於通知關閉完成
 	done := make(chan bool, 1)
 
-	// Run graceful shutdown in a separate goroutine
-	go gracefulShutdown(server, done)
+	// 啟動優雅關閉的 goroutine
+	go gracefulShutdown(apiServer, done)
 
-	err := server.ListenAndServe()
-	if err != nil && err != http.ErrServerClosed {
+	// 啟動伺服器
+	if err := apiServer.Run(); err != nil && err != http.ErrServerClosed {
 		panic(fmt.Sprintf("http server error: %s", err))
 	}
 
-	// Wait for the graceful shutdown to complete
+	// 等待優雅關閉完成
 	<-done
 	log.Println("Graceful shutdown complete.")
 }
