@@ -14,8 +14,8 @@ type Book struct {
 	Author     string     `gorm:"type:varchar(100);not null" json:"author"`
 	Summary    string     `gorm:"type:text" json:"summary"`
 	Quantity   int        `gorm:"not null" json:"quantity"`
-	CoverImage string     `gorm:"type:varchar(255)" json:"coverImage"`          // 封面圖片 URL
-	Infos      []BookInfo `gorm:"foreignKey:BookId;references:ID" json:"infos"` // 一對多關聯
+	CoverImage string     `gorm:"type:varchar(255)" json:"coverImage"` // cover image url
+	Infos      []BookInfo `gorm:"foreignKey:BookId;references:ID" json:"infos"`
 }
 
 type BookInfo struct {

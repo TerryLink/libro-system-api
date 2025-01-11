@@ -37,21 +37,21 @@ func gracefulShutdown(apiServer *server.Server, done chan bool) {
 }
 
 func main() {
-	// 初始化伺服器
+	// init server
 	apiServer := server.NewServer(8080)
 
-	// 創建一個 channel，用於通知關閉完成
+	// create a channel, for inform close complete
 	done := make(chan bool, 1)
 
-	// 啟動優雅關閉的 goroutine
+	// close goroutine
 	go gracefulShutdown(apiServer, done)
 
-	// 啟動伺服器
+	// start server
 	if err := apiServer.Run(); err != nil && err != http.ErrServerClosed {
 		panic(fmt.Sprintf("http server error: %s", err))
 	}
 
-	// 等待優雅關閉完成
+	// wait for close
 	<-done
 	log.Println("Graceful shutdown complete.")
 }

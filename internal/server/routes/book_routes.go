@@ -11,9 +11,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// RegisterBookRoutes 註冊書籍路由
+// RegisterBookRoutes
 func RegisterBookRoutes(router *gin.Engine, db database.Service) {
-	// 定義路由
+	// defined routes
 
 	repo := books.NewBookRepository(db)
 	service := books.NewBookService(repo)

@@ -9,12 +9,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// RegisterUsersRoutes 註冊書籍路由
+// RegisterUsersRoutes
 func RegisterUsersRoutes(router *gin.Engine, db database.Service) {
 
 	repo := users.NewUserRepository(db)
 	service := users.NewUserService(repo)
-	// 定義路由
+	// defined routes
 	router.GET("/users", func(c *gin.Context) {
 		getAllusers(c, service)
 	})
@@ -35,7 +35,7 @@ func RegisterUsersRoutes(router *gin.Engine, db database.Service) {
 	})
 }
 
-// 處理 GET /books 請求
+// handle get all users
 func getAllusers(c *gin.Context, service *users.UserService) {
 	allUsers, err := service.FetchAllUsers()
 	if err != nil {
@@ -45,7 +45,7 @@ func getAllusers(c *gin.Context, service *users.UserService) {
 	c.IndentedJSON(http.StatusOK, gin.H{"status": "ok", "users": allUsers})
 }
 
-// 處理 GET /books/:id 請求
+// handle get user by id
 func getUserByID(c *gin.Context, service *users.UserService) {
 	id := c.Param("id")
 	user, err := service.FetchUserByID(id)
@@ -56,7 +56,7 @@ func getUserByID(c *gin.Context, service *users.UserService) {
 	c.IndentedJSON(http.StatusOK, user)
 }
 
-// 處理 POST /books 請求
+// handle create new users
 func AddNewUser(c *gin.Context, service *users.UserService) {
 	var newUser users.User
 	if err := c.BindJSON(&newUser); err != nil {
@@ -71,7 +71,7 @@ func AddNewUser(c *gin.Context, service *users.UserService) {
 	c.IndentedJSON(http.StatusCreated, user)
 }
 
-// 處理 PATCH /return 請求
+// handle delete user
 func deleteUser(c *gin.Context, service *users.UserService) {
 	id, idOk := c.GetQuery("id")
 	if !idOk {
@@ -88,6 +88,7 @@ func deleteUser(c *gin.Context, service *users.UserService) {
 	c.IndentedJSON(http.StatusOK, gin.H{"success": success})
 }
 
+// handle update user
 func updateUser(c *gin.Context, service *users.UserService) {
 	var toUpdateUser users.User
 	if err := c.BindJSON(&toUpdateUser); err != nil {
@@ -102,6 +103,7 @@ func updateUser(c *gin.Context, service *users.UserService) {
 	c.IndentedJSON(http.StatusOK, user)
 }
 
+// handle search user by email or account name
 func searchUserByEmailOrAccountName(c *gin.Context, service *users.UserService) {
 	var req users.SearchUserRequest
 	if err := c.ShouldBindJSON(&req); err != nil {

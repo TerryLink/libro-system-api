@@ -37,6 +37,6 @@ type UserRole struct {
 }
 
 type SearchUserRequest struct {
-	Email       string `json:"email"`        // 對應 JSON 的 "email" 字段
-	AccountName string `json:"account_name"` // 對應 JSON 的 "account_name" 字段
+	Email       string `json:"email"`
+	AccountName string `json:"account_name"`
 }

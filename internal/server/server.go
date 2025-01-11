@@ -25,11 +25,11 @@ type Server struct {
 func NewServer(port int) *Server {
 	engine := gin.Default()
 
-	// 初始化標準 HTTP 伺服器
+	// init standard HTTP server
 	addr := fmt.Sprintf(":%d", port)
 	server := &http.Server{
 		Addr:         addr,
-		Handler:      engine, // Gin Engine 作為 Handler
+		Handler:      engine, // Gin Engine as Handler
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
@@ -44,16 +44,16 @@ func NewServer(port int) *Server {
 }
 
 func (s *Server) RegisterRoutes() {
-	// 註冊模組路由
+	// register models routes
 	routes.RegisterBookRoutes(s.engine, s.db)
 	routes.RegisterUsersRoutes(s.engine, s.db)
 }
 
 func (s *Server) Run() error {
-	// 註冊路由
+	// register routes
 	s.RegisterRoutes()
 
-	// 啟動伺服器
+	// start server
 	log.Printf("Server running at %s", s.server.Addr)
 	return s.server.ListenAndServe()
 }

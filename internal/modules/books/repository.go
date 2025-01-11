@@ -15,7 +15,7 @@ type bookRepository interface {
 	AddBook(newBook Book) error
 }
 
-// BookRepository 書籍資料庫操作接口
+// BookRepository
 type BookRepository struct {
 	db *gorm.DB
 }
@@ -23,13 +23,6 @@ type BookRepository struct {
 func NewBookRepository(db database.Service) *BookRepository {
 	return &BookRepository{db: db.GetDB()}
 }
-
-// 模擬數據庫
-// var books = []Book{
-// 	{ID: "1", Title: "Golang", Author: "Google", Quantity: 10},
-// 	{ID: "2", Title: "Java", Author: "Oracle", Quantity: 20},
-// 	{ID: "3", Title: "Python", Author: "Python Software Foundation", Quantity: 30},
-// }
 
 // GetBooks get all books
 func (r *BookRepository) GetBooks() ([]Book, error) {
