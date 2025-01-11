@@ -2,10 +2,18 @@ package books
 
 import (
 	"errors"
-	"go-api-server/internal/database"
+	"libro-system-api/internal/database"
 
 	"gorm.io/gorm"
 )
+
+type bookRepository interface {
+	GetBooks() ([]Book, error)
+	GetBookByID(id string) (*Book, error)
+	CheckoutBook(id string, quantity int) (*Book, error)
+	ReturnBook(id string, quantity int) (*Book, error)
+	AddBook(newBook Book) error
+}
 
 // BookRepository 書籍資料庫操作接口
 type BookRepository struct {
@@ -23,7 +31,7 @@ func NewBookRepository(db database.Service) *BookRepository {
 // 	{ID: "3", Title: "Python", Author: "Python Software Foundation", Quantity: 30},
 // }
 
-// GetBooks 獲取所有書籍
+// GetBooks get all books
 func (r *BookRepository) GetBooks() ([]Book, error) {
 	var books []Book
 	if err := r.db.Find(&books).Error; err != nil {
@@ -32,19 +40,39 @@ func (r *BookRepository) GetBooks() ([]Book, error) {
 	return books, nil
 }
 
-// GetBookByID 根據 ID 獲取書籍
+// GetBookByID
 func (r *BookRepository) GetBookByID(id string) (*Book, error) {
 
 	var book Book
 	if err := r.db.First(&book, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("book not found")
+		}
 		return nil, err
 	}
 	return &book, nil
 }
 
+// Search book by title or author
+func (r *BookRepository) SearchBooks(keyword string) ([]Book, error) {
+	var books []Book
+	query := "%" + keyword + "%"
+	if err := r.db.Where("title Like ? or author Like ?", query, query).Find(&books).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("book not found")
+		}
+		return nil, err
+	}
+	return books, nil
+}
+
+// rent book
 func (r *BookRepository) CheckoutBook(id string, quantity int) (*Book, error) {
 	var book Book
 	if err := r.db.First(&book, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("book not found")
+		}
 		return nil, err
 	}
 	if book.Quantity < quantity {
@@ -61,6 +89,9 @@ func (r *BookRepository) CheckoutBook(id string, quantity int) (*Book, error) {
 func (r *BookRepository) ReturnBook(id string, quantity int) (*Book, error) {
 	var book Book
 	if err := r.db.First(&book, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("book not found")
+		}
 		return nil, err
 	}
 	book.Quantity += quantity
@@ -70,8 +101,12 @@ func (r *BookRepository) ReturnBook(id string, quantity int) (*Book, error) {
 	return &book, nil
 }
 
-// AddBook 新增書籍
+// AddBook add new book
 func (r *BookRepository) AddBook(newBook Book) error {
+	// check newBook info
+	if newBook.Title == "" || newBook.Author == "" {
+		return errors.New("title or author are required")
+	}
 	if err := r.db.Create(&newBook).Error; err != nil {
 		return err
 	}

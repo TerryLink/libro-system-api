@@ -34,6 +34,10 @@ func (s *BookService) CheckoutBook(id string, quantity int) (*Book, error) {
 	// return book, nil
 }
 
+func (s *BookService) SearchBooks(keyword string) ([]Book, error) {
+	return s.repo.SearchBooks(keyword)
+}
+
 // ReturnBook 歸還書籍
 func (s *BookService) ReturnBook(id string, quantity int) (*Book, error) {
 	return s.repo.ReturnBook(id, quantity)

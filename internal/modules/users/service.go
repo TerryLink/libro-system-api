@@ -1,16 +1,36 @@
 package users
 
-// FetchAllBooks 獲取所有書籍
-func FetchAllUsers() []User {
-	return GetAllUsers()
+type UserService struct {
+	repo *UserRepository
 }
 
-// FetchBookByID 根據 ID 獲取書籍
-func FetchUserByID(id string) (*User, error) {
-	return GetUserByID(id)
+func NewUserService(repo *UserRepository) *UserService {
+	return &UserService{repo: repo}
 }
 
-// CreateNewBook 新增書籍
-func RegisterNewUser(newBook User) {
-	AddUser(newBook)
+// get all users
+func (u *UserService) FetchAllUsers() ([]User, error) {
+	return u.repo.GetAllUsers()
+}
+
+// get user by id
+func (u *UserService) FetchUserByID(id string) (*User, error) {
+	return u.repo.GetUserByID(id)
+}
+
+// create new user
+func (u *UserService) RegisterNewUser(newUser User) (*User, error) {
+	return u.repo.AddUser(newUser)
+}
+
+func (u *UserService) DeleteUser(id string) (bool, error) {
+	return u.repo.DeleteUser(id)
+}
+
+func (u *UserService) UpdateUser(user User) (*User, error) {
+	return u.repo.UpdateUser(user)
+}
+
+func (u *UserService) SearchByEmailOrAccountName(accountName string, email string) (*User, error) {
+	return u.repo.FindByEmailOrAccountName(accountName, email)
 }

@@ -1,17 +1,21 @@
-# Simple Makefile for a Go project
+# Detect the OS and set the executable suffix
+ifeq ($(OS),Windows_NT)
+EXE := .exe
+else
+EXE :=
+endif
 
 # Build the application
 all: build test
 
 build:
 	@echo "Building..."
-	
-	
-	@go build -o main.exe cmd/api/main.go
+	@go build -o main$(EXE) cmd/api/main.go
 
 # Run the application
 run:
 	@go run cmd/api/main.go
+
 # Create DB container
 docker-run:
 	@docker compose up --build
@@ -24,6 +28,7 @@ docker-down:
 test:
 	@echo "Testing..."
 	@go test ./... -v
+
 # Integrations Tests for the application
 itest:
 	@echo "Running integration tests..."
@@ -32,18 +37,27 @@ itest:
 # Clean the binary
 clean:
 	@echo "Cleaning..."
-	@rm -f main
+	@rm -f main$(EXE)
 
 # Live Reload
 watch:
-	@powershell -ExecutionPolicy Bypass -Command "if (Get-Command air -ErrorAction SilentlyContinue) { \
-		air; \
-		Write-Output 'Watching...'; \
-	} else { \
-		Write-Output 'Installing air...'; \
-		go install github.com/air-verse/air@latest; \
-		air; \
-		Write-Output 'Watching...'; \
-	}"
+	@if [ "$(OS)" = "Windows_NT" ]; then \
+		powershell -ExecutionPolicy Bypass -Command "if (Get-Command air -ErrorAction SilentlyContinue) { \
+			air; \
+			Write-Output 'Watching...'; \
+		} else { \
+			Write-Output 'Installing air...'; \
+			go install github.com/air-verse/air@latest; \
+			air; \
+			Write-Output 'Watching...'; \
+		}"; \
+	else \
+		if command -v air >/dev/null 2>&1; then \
+			air; \
+		else \
+			go install github.com/air-verse/air@latest; \
+			air; \
+		fi; \
+	fi
 
 .PHONY: all build run test clean watch docker-run docker-down itest

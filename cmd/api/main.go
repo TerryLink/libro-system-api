@@ -9,7 +9,7 @@ import (
 	"syscall"
 	"time"
 
-	"go-api-server/internal/server"
+	"libro-system-api/internal/server"
 )
 
 func gracefulShutdown(apiServer *server.Server, done chan bool) {

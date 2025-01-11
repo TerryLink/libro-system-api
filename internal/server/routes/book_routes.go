@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"go-api-server/internal/modules/books"
+	"libro-system-api/internal/modules/books"
 
-	"go-api-server/internal/database"
+	"libro-system-api/internal/database"
 
 	"github.com/gin-gonic/gin"
 )
@@ -32,6 +32,17 @@ func RegisterBookRoutes(router *gin.Engine, db database.Service) {
 			c.JSON(http.StatusNotFound, gin.H{"message": "book not found"})
 		}
 		c.JSON(http.StatusOK, gin.H{"status": "ok", "book": book})
+	})
+	router.GET("/books", func(c *gin.Context) {
+		keyword, keywordOK := c.GetQuery("keyword")
+		if !keywordOK {
+			c.JSON(http.StatusBadRequest, gin.H{"message": "keyword is required"})
+		}
+		books, err := service.SearchBooks(keyword)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		}
+		c.JSON(http.StatusOK, gin.H{"status": "ok", "books": books})
 	})
 	router.POST("/books", func(c *gin.Context) {
 		var newBook books.Book

@@ -10,8 +10,8 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/joho/godotenv/autoload"
 
-	"go-api-server/internal/database"
-	"go-api-server/internal/server/routes"
+	"libro-system-api/internal/database"
+	"libro-system-api/internal/server/routes"
 )
 
 type Server struct {
@@ -45,8 +45,8 @@ func NewServer(port int) *Server {
 
 func (s *Server) RegisterRoutes() {
 	// 註冊模組路由
-	routes.RegisterBookRoutes(s.engine)
-	routes.RegisterUsersRoutes(s.engine)
+	routes.RegisterBookRoutes(s.engine, s.db)
+	routes.RegisterUsersRoutes(s.engine, s.db)
 }
 
 func (s *Server) Run() error {
