@@ -34,7 +34,6 @@ func (u *UserRepository) GetAllUsers() ([]User, error) {
 	return users, nil
 }
 
-// GetUserByID
 func (u *UserRepository) GetUserByID(id string) (*User, error) {
 	var user User
 	if err := u.db.First(&user, id).Error; err != nil {
@@ -51,7 +50,6 @@ func (u *UserRepository) FindByEmailOrAccountName(accountName string, email stri
 	return &user, nil
 }
 
-// AddBook 新增書籍
 func (u *UserRepository) AddUser(newUser User) (*User, error) {
 	if newUser.AccountName == "" || newUser.FirstName == "" || newUser.LastName == "" || newUser.Email == "" {
 		return nil, errors.New("missing parameters")
