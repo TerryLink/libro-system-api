@@ -15,6 +15,9 @@ func RegisterUsersRoutes(router *gin.Engine, db database.Service) {
 	repo := users.NewUserRepository(db)
 	service := users.NewUserService(repo)
 	// defined routes
+	router.POST("/login", func(ctx *gin.Context) {
+		login(c, service)
+	})
 	router.GET("/users", func(c *gin.Context) {
 		getAllusers(c, service)
 	})
@@ -33,6 +36,22 @@ func RegisterUsersRoutes(router *gin.Engine, db database.Service) {
 	router.POST("/searchuser", func(c *gin.Context) {
 		searchUserByEmailOrAccountName(c, service)
 	})
+}
+
+func login(c *gin.Context, service *users.UserService) {
+
+	var login users.Login
+	if err := c.BindJSON(&login); err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "Invalid request body"})
+		return
+	}
+
+	jwtToken, err := service.Login(login.AccountName, login.Password)
+	if err != nil {
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"message": err.Error()})
+		return
+	}
+	c.IndentedJSON(http.StatusOK, jwtToken)
 }
 
 // handle get all users

@@ -3,8 +3,8 @@ package database
 import (
 	"context"
 	"fmt"
+	"libro-system-api/internal/config"
 	"log"
-	"os"
 	"strconv"
 	"time"
 
@@ -29,11 +29,6 @@ type service struct {
 }
 
 var (
-	dbname     = os.Getenv("BLUEPRINT_DB_DATABASE")
-	password   = os.Getenv("BLUEPRINT_DB_PASSWORD")
-	username   = os.Getenv("BLUEPRINT_DB_USERNAME")
-	port       = os.Getenv("BLUEPRINT_DB_PORT")
-	host       = os.Getenv("BLUEPRINT_DB_HOST")
 	dbInstance *service
 )
 
@@ -43,12 +38,17 @@ func New() Service {
 	if dbInstance != nil {
 		return dbInstance
 	}
-
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		if err != nil {
+			log.Fatalf("Failed to load configuration: %v", err)
+		}
+	}
 	// GORM Logger (optional for debugging)
 	newLogger := logger.Default.LogMode(logger.Info)
 
 	// Create DSN (Data Source Name)
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", username, password, host, port, dbname)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", cfg.Database.User, cfg.Database.Password, cfg.Database.Host, cfg.Database.Port, cfg.Database.Name)
 
 	// Open database using GORM
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
@@ -120,9 +120,10 @@ func (s *service) Health() map[string]string {
 // Close closes the database connection.
 func (s *service) Close() error {
 	sqlDB, err := s.db.DB()
+	cfg, err := config.LoadConfig()
 	if err != nil {
 		return fmt.Errorf("failed to get sql.DB for closing: %v", err)
 	}
-	log.Printf("Disconnected from database: %s", dbname)
+	log.Printf("Disconnected from database: %s", cfg.Database.Name)
 	return sqlDB.Close()
 }

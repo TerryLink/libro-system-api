@@ -19,8 +19,12 @@ type User struct {
 }
 
 type Login struct {
-	ID       string `json:"id"`
-	Password string `json:"password"`
+	AccountName string `json:"accountName" validate:"required, account"`
+	Password    string `json:"password" validate:"required, password"`
+}
+
+type JWTToken struct {
+	Token string `json:"token"`
 }
 
 type Role struct {

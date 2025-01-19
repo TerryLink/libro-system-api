@@ -2,13 +2,17 @@ package users
 
 import (
 	"errors"
+	"log"
 
 	"gorm.io/gorm"
 
+	"libro-system-api/internal/config"
 	"libro-system-api/internal/database"
+	"libro-system-api/internal/modules/util"
 )
 
 type userRepository interface {
+	Login()
 	GetAllUsers() ([]User, error)
 	GetUserByID(id string) (*User, error)
 	AddUser(newUser User) (*User, error)
@@ -23,6 +27,25 @@ type UserRepository struct {
 
 func NewUserRepository(db database.Service) *UserRepository {
 	return &UserRepository{db: db.GetDB()}
+}
+
+func (u *UserRepository) Login(accountName string, password string) (*JWTToken, error) {
+	var user User
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		log.Fatalf("Failed to load configuration: %v", err)
+	}
+	if err := u.db.Where("account_name = ?", user.AccountName).First(&user).Error; err != nil {
+		return nil, err
+	}
+	if !util.ValidatePassword(user.Password, []byte(password)) {
+		return nil, errors.New("invalid password")
+	}
+	tokenString, err := util.CreateJWT([]byte(cfg.JWTSecret), accountName)
+	if err != nil {
+		return nil, err
+	}
+	return &JWTToken{Token: tokenString}, nil
 }
 
 // Get all users

@@ -8,6 +8,10 @@ func NewUserService(repo *UserRepository) *UserService {
 	return &UserService{repo: repo}
 }
 
+func (u *UserService) Login(accountName string, password string) (*JWTToken, error) {
+	return u.repo.Login(accountName, password)
+}
+
 // get all users
 func (u *UserService) FetchAllUsers() ([]User, error) {
 	return u.repo.GetAllUsers()
