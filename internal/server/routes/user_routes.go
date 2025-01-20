@@ -15,7 +15,7 @@ func RegisterUsersRoutes(router *gin.Engine, db database.Service) {
 	repo := users.NewUserRepository(db)
 	service := users.NewUserService(repo)
 	// defined routes
-	router.POST("/login", func(ctx *gin.Context) {
+	router.POST("/login", func(c *gin.Context) {
 		login(c, service)
 	})
 	router.GET("/users", func(c *gin.Context) {
